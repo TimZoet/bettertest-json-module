@@ -19,8 +19,6 @@
 ////////////////////////////////////////////////////////////////
 
 #include "bettertest/exceptions/export_error.h"
-#include "bettertest/mixins/compare_mixin.h"
-#include "bettertest/mixins/exception_mixin.h"
 #include "bettertest/suite/suite_data.h"
 #include "bettertest/suite/test_suite.h"
 
@@ -58,44 +56,28 @@ namespace bt
                               {"passing", state->passing}};
     }
 
-    void to_json(nlohmann::json& json, const CompareMixin::Result& res)
+    void to_json(nlohmann::json& json, const Result& res)
     {
         switch (res.status)
         {
-        case compare_result_t::success: json["status"] = "success"; break;
-        case compare_result_t::failure: json["status"] = "failure"; break;
-        case compare_result_t::exception: json["status"] = "exception"; break;
+        case result_t::success: json["status"] = "success"; break;
+        case result_t::failure: json["status"] = "failure"; break;
+        case result_t::exception: json["status"] = "exception"; break;
         }
         json["location"] = res.location;
         json["error"]    = res.error;
     }
 
-    void to_json(nlohmann::json& json, const CompareMixin& c)
+    void to_json(nlohmann::json& json, const IMixinResultsGetter& getter)
     {
         // Write global stats.
-        json["stats"] = {{"total", c.getComparisons()},
-                         {"success", c.getSuccesses()},
-                         {"failure", c.getFailures()},
-                         {"exception", c.getExceptions()}};
+        json["stats"] = {{"total", getter.getTotal()},
+                         {"success", getter.getSuccesses()},
+                         {"failure", getter.getFailures()},
+                         {"exception", getter.getExceptions()}};
 
         // Write per-call information.
-        json["results"] = c.getResults();
-    }
-
-    void to_json(nlohmann::json& json, const ExceptionMixin::Result& res)
-    {
-        json["status"]   = res.status ? "success" : "failure";
-        json["location"] = res.location;
-        json["error"]    = res.error;
-    }
-
-    void to_json(nlohmann::json& json, const ExceptionMixin& c)
-    {
-        // Write global stats.
-        json["stats"] = {{"total", c.getCalls()}, {"success", c.getSuccesses()}, {"failure", c.getFailures()}};
-
-        // Write per-call information.
-        json["results"] = c.getResults();
+        json["results"] = getter.getResults();
     }
 
     JsonExporter::JsonExporter(std::filesystem::path directory) : IExporter(std::move(directory)) {}
@@ -125,7 +107,7 @@ namespace bt
         file.close();
     }
 
-    void JsonExporter::writeUnitTestFile(const TestSuite& suite, const ITest& test, const std::string& name)
+    void JsonExporter::writeUnitTestFile(const TestSuite& suite, const IUnitTest& test, const std::string& name)
     {
         // Create directory if it does not exist.
         const auto testPath = this->path / name;
@@ -133,16 +115,13 @@ namespace bt
 
         // Write test results.
         nlohmann::json data;
-        for (const auto& mixin : test.getMixins())
+        const auto& mixins  = test.getMixins();
+        const auto& getters = test.getResultsGetters();
+        for (size_t i = 0; i < mixins.size(); i++)
         {
-            if (mixin == CompareMixin::type)
-                data[CompareMixin::type] = dynamic_cast<const CompareMixin&>(test);
-            else if (mixin == ExceptionMixin::type)
-                data[ExceptionMixin::type] = dynamic_cast<const ExceptionMixin&>(test);
-            else
-            {
-                // Unknown mixin type.
-            }
+            const auto& getter = *getters[i];
+            const auto& mixin  = mixins[i];
+            data[mixin]        = getter;
         }
 
         // Generate filename as "unit_########.json".
