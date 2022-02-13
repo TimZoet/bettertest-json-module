@@ -5,7 +5,6 @@
 ////////////////////////////////////////////////////////////////
 
 #include <fstream>
-#include <string>
 
 ////////////////////////////////////////////////////////////////
 // External includes.
@@ -80,12 +79,10 @@ namespace bt
         file.close();
 
         // Read suite data.
-        const auto it = data.find("suite");
-        if (it != data.end()) it->get_to(suite.getData());
+        if (const auto it = data.find("suite"); it != data.end()) it->get_to(suite.getData());
 
         // Read unit test states.
-        const auto it0 = data.find("unitTests");
-        if (it0 != data.end()) it0->get_to(suite.getUnitTestSuite().getData());
+        if (const auto it0 = data.find("unitTests"); it0 != data.end()) it0->get_to(suite.getUnitTestSuite().getData());
 
         return true;
     }

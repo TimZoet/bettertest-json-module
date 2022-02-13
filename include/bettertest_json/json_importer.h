@@ -21,7 +21,7 @@ namespace bt
 
         explicit JsonImporter(std::filesystem::path directory);
 
-        virtual ~JsonImporter() = default;
+        ~JsonImporter() noexcept override = default;
 
         JsonImporter& operator=(const JsonImporter&) = delete;
 
