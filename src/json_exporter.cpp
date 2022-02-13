@@ -6,6 +6,7 @@
 
 #include <format>
 #include <fstream>
+#include <source_location>
 
 ////////////////////////////////////////////////////////////////
 // External includes.
@@ -22,19 +23,7 @@
 #include "bettertest/mixins/exception_mixin.h"
 #include "bettertest/suite/suite_data.h"
 #include "bettertest/suite/test_suite.h"
-#include "bettertest/utils/source_location.h"
 
-namespace bt
-{
-    inline void to_json(nlohmann::json& json, const source_location& loc)
-    {
-        json["column"] = loc.column();
-        json["line"]   = loc.line();
-        json["file"]   = loc.file_name();
-    }
-}  // namespace bt
-
-#if __has_include(<source_location>)
 namespace nlohmann
 {
     template<>
@@ -48,21 +37,6 @@ namespace nlohmann
         }
     };
 }  // namespace nlohmann
-#elif __has_include(<experimental/source_location>)
-namespace nlohmann
-{
-    template<>
-    struct adl_serializer<std::experimental::source_location>
-    {
-        static void to_json(json& j, const std::experimental::source_location& loc)
-        {
-            j["column"]   = loc.column();
-            j["line"]     = loc.line();
-            j["fileName"] = loc.file_name();
-        }
-    };
-}  // namespace nlohmann
-#endif
 
 namespace bt
 {
