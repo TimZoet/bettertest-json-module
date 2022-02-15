@@ -67,7 +67,7 @@ namespace bt
 
     JsonImporter::JsonImporter(std::filesystem::path directory) : IImporter(std::move(directory)) {}
 
-    bool JsonImporter::readSuiteFile(TestSuite& suite)
+    bool JsonImporter::readSuite(TestSuite& suite)
     {
         if (!exists(path / "suite.json")) return false;
 

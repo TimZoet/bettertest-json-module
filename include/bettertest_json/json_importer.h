@@ -1,7 +1,7 @@
 #pragma once
 
 ////////////////////////////////////////////////////////////////
-// Current target includes.
+// Module includes.
 ////////////////////////////////////////////////////////////////
 
 #include "bettertest/output/importer_interface.h"
@@ -27,6 +27,6 @@ namespace bt
 
         JsonImporter& operator=(JsonImporter&&) = delete;
 
-        bool readSuiteFile(TestSuite& suite) override;
+        bool readSuite(TestSuite& suite) override;
     };
 }

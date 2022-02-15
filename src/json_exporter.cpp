@@ -84,7 +84,7 @@ namespace bt
 
     JsonExporter::~JsonExporter() noexcept = default;
 
-    void JsonExporter::writeSuiteFile(const TestSuite& suite)
+    void JsonExporter::writeSuite(const TestSuite& suite)
     {
         // Create directory if it does not exist.
         if (!exists(path)) create_directories(path);
@@ -107,7 +107,7 @@ namespace bt
         file.close();
     }
 
-    void JsonExporter::writeUnitTestFile(const TestSuite& suite, const IUnitTest& test, const std::string& name)
+    void JsonExporter::writeUnitTestResults(const TestSuite& suite, const IUnitTest& test, const std::string& name)
     {
         // Create directory if it does not exist.
         const auto testPath = this->path / name;
