@@ -38,6 +38,10 @@ namespace nlohmann
 
 namespace bt
 {
+    void to_json(nlohmann::json& json, const Version& version)
+    {
+        json = nlohmann::json{{"major", version.major}, {"minor", version.minor}, {"patch", version.patch}};
+    }
     void to_json(nlohmann::json& json, const TestSuite& suite)
     {
         json = nlohmann::json{{"dateCreated", suite.getData().dateCreated},
@@ -115,8 +119,8 @@ namespace bt
 
         // Write test results.
         nlohmann::json data;
-        const auto& mixins  = test.getMixins();
-        const auto& getters = test.getResultsGetters();
+        const auto&    mixins  = test.getMixins();
+        const auto&    getters = test.getResultsGetters();
         for (size_t i = 0; i < mixins.size(); i++)
         {
             const auto& getter = *getters[i];

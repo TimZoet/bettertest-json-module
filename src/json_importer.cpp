@@ -47,6 +47,13 @@ namespace nlohmann
 
 namespace bt
 {
+    void from_json(const nlohmann::json& json, Version& v)
+    {
+        json.at("major").get_to(v.major);
+        json.at("minor").get_to(v.minor);
+        json.at("patch").get_to(v.patch);
+    }
+
     void from_json(const nlohmann::json& json, SuiteData& s)
     {
         json.at("dateCreated").get_to(s.dateCreated);
