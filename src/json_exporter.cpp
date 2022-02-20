@@ -133,7 +133,4 @@ namespace bt
         file << data;
         file.close();
     }
-
-    bool JsonExporter::supportsMultithreading() const noexcept { return true; }
-
 }  // namespace bt
